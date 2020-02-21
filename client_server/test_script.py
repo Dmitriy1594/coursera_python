@@ -9,7 +9,7 @@
 запускаете этот скрипт.
 """
 import sys
-from client import Client, ClientError
+from client_server.client import Client, ClientError
 
 def run(host, port):
 

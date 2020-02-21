@@ -13,7 +13,8 @@ class Storage:
             self._data[key][timestamp] = [value,]
 
         elif len(self._data[key][timestamp]) > 0:
-            self._data[key][timestamp].append(value)
+            if value not in self._data[key][timestamp]:
+                self._data[key][timestamp].append(value)
 
 
 
@@ -148,11 +149,20 @@ class EchoServerClientProtocol(asyncio.Protocol):
                     return False
 
                 elif length == 4:
-                    if float(decode_data[2]) and int(decode_data[3]) and decode_data[1] != "\n":
-                        return True
-
-                    else:
+                    try:
+                        if decode_data[1] != "\n":
+                            float(decode_data[2])
+                            int(decode_data[3])
+                            return True
+                        else:
+                            return False
+                    except ...:
                         return False
+                    # if type(float(decode_data[2]) and int(decode_data[3]) and decode_data[1] != "\n":
+                    #     return True
+                    #
+                    # else:
+                    #     return False
 
                 else:
                     return False
@@ -162,6 +172,15 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
         except ...:
             return False
+
+    @staticmethod
+    def clear(resp):
+        res = ""
+        for char in resp:
+            if char not in "{}[]()":
+                res += char
+
+        return res
 
     def connection_made(self, transport):
         self.transport = transport
@@ -193,6 +212,10 @@ class EchoServerClientProtocol(asyncio.Protocol):
         except (ParseError, ExecutorError, ValueError, ServerError, Exception) as err:
             self.transport.write('error\nwrong command\n\n'.encode())
             return
+
+
+        resp = self.clear(resp)
+        # print(resp.encode())
 
         self.transport.write(resp.encode())
 
