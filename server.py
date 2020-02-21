@@ -8,13 +8,8 @@ class Storage:
     def put(self, key, value, timestamp):
         if key not in self._data:
             self._data[key] = {}
-            self._data[key][timestamp] = [value,]
-        elif timestamp not in self._data[key].keys():
-            self._data[key][timestamp] = [value,]
 
-        elif len(self._data[key][timestamp]) > 0:
-            if value not in self._data[key][timestamp]:
-                self._data[key][timestamp].append(value)
+        self._data[key][timestamp] = value
 
 
 
@@ -45,8 +40,7 @@ class Parser:
                 continue
             for key, values in response.items():
                 for timestamp, value in values:
-                    for v in value:
-                        rows.append(f"{key} {v} {timestamp}")
+                    rows.append(f"{key} {value} {timestamp}")
 
         result = "ok\n"
 
@@ -158,11 +152,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
                             return False
                     except ...:
                         return False
-                    # if type(float(decode_data[2]) and int(decode_data[3]) and decode_data[1] != "\n":
-                    #     return True
-                    #
-                    # else:
-                    #     return False
 
                 else:
                     return False
@@ -172,15 +161,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
 
         except ...:
             return False
-
-    @staticmethod
-    def clear(resp):
-        res = ""
-        for char in resp:
-            if char not in "{}[]()":
-                res += char
-
-        return res
 
     def connection_made(self, transport):
         self.transport = transport
@@ -213,10 +193,6 @@ class EchoServerClientProtocol(asyncio.Protocol):
             self.transport.write('error\nwrong command\n\n'.encode())
             return
 
-
-        resp = self.clear(resp)
-        # print(resp.encode())
-
         self.transport.write(resp.encode())
 
 
@@ -238,4 +214,4 @@ def run_server(host, port):
 
 
 if __name__ == "__main__":
-    run_server('127.0.0.1', 8182)
+    run_server('127.0.0.1', 8888)
