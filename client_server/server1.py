@@ -8,8 +8,14 @@ class Storage:
     def put(self, key, value, timestamp):
         if key not in self._data:
             self._data[key] = {}
+            self._data[key][timestamp] = [value,]
+        elif timestamp not in self._data[key].keys():
+            self._data[key][timestamp] = [value,]
 
-        self._data[key][timestamp] = [value,]
+        elif len(self._data[key][timestamp]) > 0:
+            self._data[key][timestamp].append(value)
+
+
 
     def get(self, key):
         data = self._data
@@ -38,7 +44,8 @@ class Parser:
                 continue
             for key, values in response.items():
                 for timestamp, value in values:
-                    rows.append(f"{key} {value} {timestamp}")
+                    for v in value:
+                        rows.append(f"{key} {v} {timestamp}")
 
         result = "ok\n"
 
@@ -208,4 +215,4 @@ def run_server(host, port):
 
 
 if __name__ == "__main__":
-    run_server('127.0.0.1', 8888)
+    run_server('127.0.0.1', 8182)
